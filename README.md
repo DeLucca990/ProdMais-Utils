@@ -1,3 +1,3 @@
-# Unzip Folder Automation
+# Prodmais Utils
 
-Simple script to unzip multiple folders and move file through them
+Scripts úteis para utilizar no desenvolvimento da platafroma ProdMais
