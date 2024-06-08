@@ -1,12 +1,11 @@
 import os
 import zipfile
-from dotenv import load_dotenv
 
-load_dotenv()
+# Subistitua o valor da variável compressed_folder pelo caminho da pasta onde estão os arquivos compactados
+compressed_folder = 'C:/Users/PedroDL/Documents/ProdMais Insper/ProdMais-Utils/compactadas'
 
-compressed_folder = os.getenv('COMPRESSED_FOLDER_UNZIP')
-
-dest_folder = os.getenv('DEST_FOLDER_UNZIP')
+# Subistitua o valor da variável dest_folder pelo caminho da pasta onde deseja descompactar os arquivos
+dest_folder = 'C:/Users/PedroDL/Documents/ProdMais Insper/ProdMais-Utils/descompactadas'
 
 if not os.path.exists(dest_folder):
     os.makedirs(dest_folder)

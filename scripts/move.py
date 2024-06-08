@@ -1,15 +1,12 @@
 import os
 import shutil
-from dotenv import load_dotenv
 
-load_dotenv()
-
-dest_folder = os.getenv('DEST_FOLDER_MOVE')
+dest_folder = 'C:/Users/PedroDL/Documents/ProdMais Insper/ProdMais-Utils/curriculos'
 
 if not os.path.exists(dest_folder):
     os.makedirs(dest_folder)
 
-root_folder = os.getenv('ROOT_FOLDER_MOVE')
+root_folder = 'C:/Users/PedroDL/Documents/ProdMais Insper/ProdMais-Utils/descompactadas'
 
 for root, dirs, files in os.walk(root_folder):
     for file in files:
@@ -19,7 +16,7 @@ for root, dirs, files in os.walk(root_folder):
             folder_name = os.path.basename(root)
             dest_file = os.path.join(dest_folder, f"{folder_name}.xml")
 
-            shutil.copy(src_file, dest_file)
+            shutil.move(src_file, dest_file)
             print(f'Arquivo {src_file} copiado para {dest_file}')
 
 print('Fim do programa')

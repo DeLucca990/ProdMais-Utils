@@ -1,5 +1,6 @@
 .env
 
 /compactadas
-/curriculos
+# /curriculos
 /descompactadas
+/data
