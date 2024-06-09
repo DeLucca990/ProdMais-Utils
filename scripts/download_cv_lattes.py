@@ -69,8 +69,8 @@ def main():
     x_position, y_position = read_mouse_position()
 
     for index, id_lattes in enumerate(df['id_lattes']):
-        if index < 100:
-            continue
+        # if index < 300:
+        #     continue
         print('\n')
         print(f"Iniciando download para ID: {id_lattes}")
         print(f"Indice: {index}")
@@ -81,10 +81,10 @@ def main():
             df.loc[index, 'status_extracao'] = 0
             print(f"Download para ID: {id_lattes} falhou.")
             break
-        if index == 199:
-            break
+        # if index == 299:
+        #     break
     print("Salvando arquivo...")
-    df.to_excel("./data/resultado2.xlsx", index=False)
+    df.to_excel("./data/resultado.xlsx", index=False)
 
     end_time = time.time()
     final_time = (end_time - start_time) / 60
