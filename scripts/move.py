@@ -8,7 +8,7 @@ if not os.path.exists(dest_folder):
 
 root_folder = 'C:/Users/PedroDL/Documents/ProdMais Insper/ProdMais-Utils/descompactadas'
 
-for root, dirs, files in os.walk(root_folder):
+for root, dirs, files in os.walk(root_folder, topdown=False):
     for file in files:
         if file.endswith('.xml'):
             src_file = os.path.join(root, file)
@@ -18,5 +18,9 @@ for root, dirs, files in os.walk(root_folder):
 
             shutil.move(src_file, dest_file)
             print(f'Arquivo {src_file} copiado para {dest_file}')
+
+    if root != root_folder and not os.listdir(root):
+        os.rmdir(root)
+        print(f'Diretório {root} removido')
 
 print('Fim do programa')
