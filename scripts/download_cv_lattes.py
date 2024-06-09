@@ -27,6 +27,9 @@ def is_downloaded(download_folder, wait_time=5):
         print("Nenhum arquivo novo foi detectado.")
         return False
 
+def extract_id_lattes(url):
+    return url.split('/')[-1]
+
 def download_lattes(id_lattes, x_position, y_position, download_folder):
     url = f"http://buscatextual.cnpq.br/buscatextual/download.do?metodo=apresentar&idcnpq={id_lattes}"
     firefox_path = 'C:/Arquivos de Programas/Mozilla Firefox/firefox.exe'  # Caminho do executável do Firefox
@@ -64,27 +67,28 @@ def download_lattes(id_lattes, x_position, y_position, download_folder):
 
 def main():
     start_time = time.time()
-    df = pd.read_excel("./data/dados docentes prodmais.xlsx", sheet_name="docentes_lattes") 
+    df = pd.read_excel("./data/dados docentes prodmais.xlsx", sheet_name="erros") 
     download_folder = os.path.expanduser('~\\Downloads') 
     x_position, y_position = read_mouse_position()
 
-    for index, id_lattes in enumerate(df['id_lattes']):
+    for index, url_lattes in enumerate(df['ds_url_lattes']):
+        id_lattes = extract_id_lattes(url_lattes)
         # if index < 300:
         #     continue
         print('\n')
         print(f"Iniciando download para ID: {id_lattes}")
         print(f"Indice: {index}")
         if download_lattes(id_lattes, x_position, y_position, download_folder):
-            df.loc[index, 'status_extracao'] = 1
+            #df.loc[index, 'status_extracao'] = 1
             print(f"Download para ID: {id_lattes} concluído com sucesso.")
         else:
-            df.loc[index, 'status_extracao'] = 0
+            #df.loc[index, 'status_extracao'] = 0
             print(f"Download para ID: {id_lattes} falhou.")
             break
         # if index == 299:
         #     break
     print("Salvando arquivo...")
-    df.to_excel("./data/resultado.xlsx", index=False)
+    #df.to_excel("./data/resultado.xlsx", index=False)
 
     end_time = time.time()
     final_time = (end_time - start_time) / 60
