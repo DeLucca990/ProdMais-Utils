@@ -1,4 +1,3 @@
-import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
@@ -25,26 +24,30 @@ time.sleep(1)
 
 cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
 c = 1
-for filename in os.listdir(cvs_dir):
-    if filename.endswith('.xml'):
-        file_path = os.path.join(cvs_dir, filename)
 
-        browser.find_element(By.ID, 'fileXML').send_keys(file_path)
-        time.sleep(1)
+with open('ProdMais-Utils/assets/cvs_infos.txt', 'w') as log_file:
+    for filename in os.listdir(cvs_dir):
+        if filename.endswith('.xml'):
+            file_path = os.path.join(cvs_dir, filename)
 
-        browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
-        time.sleep(2)
+            browser.find_element(By.ID, 'fileXML').send_keys(file_path)
+            time.sleep(1)
 
-        # Verificando conteúdo da página
-        page_content = browser.page_source
-        if ('Registro anterior não encontrado na base') in page_content:
-            print(f"Arquivo {filename} [{c}] adicionao")
-        else:
-            print(f"Arquivo {filename} [{c}] já existe na base")
-        c+=1
+            browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
+            time.sleep(2)
 
-        browser.back()
-        time.sleep(2)
+            # Verificando conteúdo da página
+            page_content = browser.page_source
+            if ('Registro anterior não encontrado na base') in page_content:
+                log_file.write(f"{filename} - Adicionado\n")
+                print(f"Arquivo {filename} [{c}] adicionado")
+            else:
+                log_file.write(f"{filename} - Já existe na base\n")
+                print(f"Arquivo {filename} [{c}] já existe na base")
+            c+=1
+
+            browser.back()
+            time.sleep(2)
 
 end_time = time.time()
 final_time = (end_time - start_time)/60
