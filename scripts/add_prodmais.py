@@ -26,15 +26,18 @@ time.sleep(1)
 
 # cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
 cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
-
 c = 1
 # local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
-dados_docentes_dir = 'data\\dados_docentes_valores.xlsx'
+dados_docentes_dir = 'data\\dados_docentes.xlsx'
+stats_dir = 'data\\status_add.xlsx'
 
 try:
     # Carregue o arquivo de workbook apenas uma vez
     workbook = openpyxl.load_workbook(dados_docentes_dir)
     sheet = workbook['docentes_lattes']
+    
+    workbook_stats = openpyxl.load_workbook(stats_dir)
+    stats_sheet = workbook_stats[workbook_stats.sheetnames[0]]
 
     for row in range(2, sheet.max_row + 1):
         url_lattes = sheet.cell(row=row, column=3).value
@@ -127,19 +130,19 @@ try:
                 page_content = browser.page_source
                 if ('Registro anterior não encontrado na base') in page_content:
                     print(f"Arquivo {filename} [{c}] adicionado")
-                    sheet.cell(row=row, column=9).value = 'OK'
-                    sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    stats_sheet.cell(row=row, column=9).value = 'OK'
+                    stats_sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
                 else:
                     print(f"Arquivo {filename} [{c}] já existe na base")
-                    sheet.cell(row=row, column=9).value = 'Já existe'
-                    sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    stats_sheet.cell(row=row, column=8).value = 'Já existe'
+                    stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
                 c+=1
 
                 browser.back()
                 time.sleep(2)
 
                 # Salve as alterações a cada iteração
-                workbook.save(dados_docentes_dir)
+                workbook_stats.save(stats_dir)
 except Exception as e:
     print(f"An error occurred: {str(e)}")
 finally:
