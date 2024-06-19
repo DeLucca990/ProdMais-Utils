@@ -7,8 +7,8 @@ import openpyxl
 
 load_dotenv()
 
-browser = webdriver.Firefox()
-# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+# browser = webdriver.Firefox()
+browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
 url = 'http://localhost:8080/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
@@ -24,58 +24,128 @@ time.sleep(0.5)
 browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
-cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
-# cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
+# cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
+cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
 
 c = 1
 # local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
-dados_docentes_dir = 'data\\dados_docentes.xlsx'
+dados_docentes_dir = 'data\\dados_docentes_valores.xlsx'
 
-# Carregue o arquivo de workbook apenas uma vez
-workbook = openpyxl.load_workbook(dados_docentes_dir)
-sheet = workbook['docentes_lattes']
+try:
+    # Carregue o arquivo de workbook apenas uma vez
+    workbook = openpyxl.load_workbook(dados_docentes_dir)
+    sheet = workbook['docentes_lattes']
 
-for row in range(2, sheet.max_row + 1):
-    url_lattes = sheet.cell(row=row, column=3).value
-    id = url_lattes.split('/')[-1]
-    print(id)
+    for row in range(2, sheet.max_row + 1):
+        url_lattes = sheet.cell(row=row, column=3).value
+        id = url_lattes.split('/')[-1]
+        print(id)
 
-    for filename in os.listdir(cvs_dir):
-        if filename.endswith('.xml') and id in filename:
-            file_path = os.path.join(cvs_dir, filename)
+        for filename in os.listdir(cvs_dir):
+            if filename.endswith('.xml') and id in filename:
+                file_path = os.path.join(cvs_dir, filename)
 
-            browser.find_element(By.ID, 'fileXML').send_keys(file_path)
-            time.sleep(1)
+                browser.find_element(By.ID, 'fileXML').send_keys(file_path)
+                time.sleep(1)
 
-            # encontra campo name="genero" e digita o conteúdo da coluna 12
-            genero = sheet.cell(row=row, column=12).value
-            browser.find_element(By.NAME, 'genero').clear()
-            browser.find_element(By.NAME, 'genero').send_keys(genero)
-            time.sleep(0.5)
-            
-            browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
-            time.sleep(2)
+                # encontra campo name="genero" e digita o conteúdo da coluna 12
+                genero = sheet.cell(row=row, column=12).value
+                browser.find_element(By.NAME, 'genero').clear()
+                
+                # se genero != None, digite genero
+                if genero:
+                    browser.find_element(By.NAME, 'genero').send_keys(genero)
+                time.sleep(0.05)
+                
+                google_scholar = sheet.cell(row=row, column=13).value
+                browser.find_element(By.NAME, 'google_citation').clear()
+                if google_scholar:
+                    browser.find_element(By.NAME, 'google_citation').send_keys(google_scholar)
+                    
+                browser.find_element(By.NAME, 'lattes_id').clear()
+                browser.find_element(By.NAME, 'lattes_id').send_keys(id)
+                time.sleep(0.05)
+                
+                linkedin = sheet.cell(row=row, column=22).value
+                browser.find_element(By.NAME, 'tag').clear()
+                if linkedin:
+                    browser.find_element(By.NAME, 'tag').send_keys(linkedin)
+                time.sleep(0.05)
+                    
+                unidades_academicas = []
+                direito = sheet.cell(row=row, column=19).value
+                negocios = sheet.cell(row=row, column=20).value
+                tecnologia = sheet.cell(row=row, column=21).value
+                
+                if direito:
+                    unidades_academicas.append('Direito')
+                if negocios:
+                    unidades_academicas.append('Negócios')
+                if tecnologia:
+                    unidades_academicas.append('Tecnologia')
+                unidade_academica = ', '.join(unidades_academicas)
+                
+                
+                browser.find_element(By.NAME, 'departamento').clear()
+                if unidade_academica:
+                    browser.find_element(By.NAME, 'departamento').send_keys(unidade_academica)
+                    time.sleep(0.05)
+                
+                dot = sheet.cell(row=row, column=14).value
+                mpa = sheet.cell(row=row, column=15).value
+                mpe = sheet.cell(row=row, column=16).value
+                mpp = sheet.cell(row=row, column=17).value
+                dpa = sheet.cell(row=row, column=18).value
+                
+                strictu_sensu = []
+                if dot:
+                    strictu_sensu.append('DOT')
+                if mpa:
+                    strictu_sensu.append('MPA')
+                if mpe:
+                    strictu_sensu.append('MPE')
+                if mpp:
+                    strictu_sensu.append('MPP')
+                if dpa:
+                    strictu_sensu.append('DPA')
+                
+                strictu_sensu = ', '.join(strictu_sensu)
+                browser.find_element(By.NAME, 'divisao').clear()
+                if strictu_sensu:
+                    browser.find_element(By.NAME, 'divisao').send_keys(strictu_sensu)
+                    time.sleep(0.05)
+                    
+                tipo_vinculo = str(sheet.cell(row=row, column=11).value)
+                browser.find_element(By.NAME, 'tipvin').clear()
+                if tipo_vinculo in ['0', '1', '2', '3']:
+                    browser.find_element(By.NAME, 'tipvin').send_keys(tipo_vinculo)
+                time.sleep(1)
+                
+                browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
+                time.sleep(2)
 
-            page_content = browser.page_source
-            if ('Registro anterior não encontrado na base') in page_content:
-                print(f"Arquivo {filename} [{c}] adicionado")
-                sheet.cell(row=row, column=9).value = 'OK'
-                sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
-            else:
-                print(f"Arquivo {filename} [{c}] já existe na base")
-                sheet.cell(row=row, column=9).value = 'Já existe'
-                sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
-            c+=1
+                page_content = browser.page_source
+                if ('Registro anterior não encontrado na base') in page_content:
+                    print(f"Arquivo {filename} [{c}] adicionado")
+                    sheet.cell(row=row, column=9).value = 'OK'
+                    sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                else:
+                    print(f"Arquivo {filename} [{c}] já existe na base")
+                    sheet.cell(row=row, column=9).value = 'Já existe'
+                    sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                c+=1
 
-            browser.back()
-            time.sleep(2)
+                browser.back()
+                time.sleep(2)
 
-            # Salve as alterações a cada iteração
-            workbook.save(dados_docentes_dir)
+                # Salve as alterações a cada iteração
+                workbook.save(dados_docentes_dir)
+except Exception as e:
+    print(f"An error occurred: {str(e)}")
+finally:
+    end_time = time.time()
+    final_time = (end_time - start_time)/60
 
-end_time = time.time()
-final_time = (end_time - start_time)/60
+    print(f"Tempo de execução do script: {final_time:2f} minutos")
 
-print(f"Tempo de execução do script: {final_time:2f} minutos")
-
-browser.quit()
+    browser.quit()
