@@ -85,12 +85,12 @@ try:
                     unidades_academicas.append('Negócios')
                 if tecnologia:
                     unidades_academicas.append('Tecnologia')
-                unidade_academica = ', '.join(unidades_academicas)
+                unidade_academica = '|'.join(unidades_academicas)
                 
                 
-                browser.find_element(By.NAME, 'departamento').clear()
+                browser.find_element(By.NAME, 'unidade_academica').clear()
                 if unidade_academica:
-                    browser.find_element(By.NAME, 'departamento').send_keys(unidade_academica)
+                    browser.find_element(By.NAME, 'unidade_academica').send_keys(unidade_academica)
                     time.sleep(0.05)
                 
                 dot = sheet.cell(row=row, column=14).value
@@ -98,36 +98,30 @@ try:
                 mpe = sheet.cell(row=row, column=16).value
                 mpp = sheet.cell(row=row, column=17).value
                 dpa = sheet.cell(row=row, column=18).value
-                browser.find_element(By.NAME, 'dot').clear()
-                browser.find_element(By.NAME, 'mpa').clear()
-                browser.find_element(By.NAME, 'mpe').clear()
-                browser.find_element(By.NAME, 'mpp').clear()
-                browser.find_element(By.NAME, 'dpa').clear()
+                
+                ppgs = []
                 if dot:
-                    browser.find_element(By.NAME, 'dot').send_keys('SIM')
-                else:
-                    browser.find_element(By.NAME, 'dot').send_keys('NÃO')
+                    ppgs.append('Doutorado Acadêmico em Economia')  #precisa confirmar se esse é o nome do DOT
                 if mpa:
-                    browser.find_element(By.NAME, 'mpa').send_keys('SIM')
-                else:
-                    browser.find_element(By.NAME, 'mpa').send_keys('NÃO')
+                    ppgs.append('Mestrado Profissional em Administração')
                 if mpe:
-                    browser.find_element(By.NAME, 'mpe').send_keys('SIM')
-                else:
-                    browser.find_element(By.NAME, 'mpe').send_keys('NÃO')
+                    ppgs.append('Mestrado Profissional em Economia')
                 if mpp:
-                    browser.find_element(By.NAME, 'mpp').send_keys('SIM')
-                else:
-                    browser.find_element(By.NAME, 'mpp').send_keys('NÃO')
+                    ppgs.append('Mestrado Profissional em Políticas Públicas')
                 if dpa:
-                    browser.find_element(By.NAME, 'dpa').send_keys('SIM')
-                else:
-                    browser.find_element(By.NAME, 'dpa').send_keys('NÃO')
-                    
+                    ppgs.append('Doutorado Profissional em Administração')
+                
+                ppgs = '|'.join(ppgs)
+                browser.find_element(By.NAME, 'ppg_nome').clear()
+                if ppgs:
+                    browser.find_element(By.NAME, 'ppg_nome').send_keys(ppgs)
+                
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
-                if tipo_vinculo in ['0', '1', '2', '3']:
-                    browser.find_element(By.NAME, 'tipvin').send_keys(tipo_vinculo)
+                if tipo_vinculo in ['0']:
+                    browser.find_element(By.NAME, 'tipvin').send_keys("TP")
+                if tipo_vinculo in ['1', '2', '3']:
+                    browser.find_element(By.NAME, 'tipvin').send_keys("TI")
                 time.sleep(1)
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
