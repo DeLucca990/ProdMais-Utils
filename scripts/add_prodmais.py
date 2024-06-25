@@ -42,12 +42,11 @@ try:
     for row in range(2, sheet.max_row + 1):
         url_lattes = sheet.cell(row=row, column=3).value
         id = url_lattes.split('/')[-1]
-        print(id)
 
         for filename in os.listdir(cvs_dir):
             if filename.endswith('.xml') and id in filename:
                 file_path = os.path.join(cvs_dir, filename)
-
+                
                 browser.find_element(By.ID, 'fileXML').send_keys(file_path)
                 time.sleep(1)
 
@@ -70,9 +69,9 @@ try:
                 time.sleep(0.05)
                 
                 linkedin = sheet.cell(row=row, column=22).value
-                browser.find_element(By.NAME, 'tag').clear()
+                browser.find_element(By.NAME, 'linkedin').clear()
                 if linkedin:
-                    browser.find_element(By.NAME, 'tag').send_keys(linkedin)
+                    browser.find_element(By.NAME, 'linkedin').send_keys(linkedin)
                 time.sleep(0.05)
                     
                 unidades_academicas = []
@@ -99,24 +98,31 @@ try:
                 mpe = sheet.cell(row=row, column=16).value
                 mpp = sheet.cell(row=row, column=17).value
                 dpa = sheet.cell(row=row, column=18).value
-                
-                strictu_sensu = []
+                browser.find_element(By.NAME, 'dot').clear()
+                browser.find_element(By.NAME, 'mpa').clear()
+                browser.find_element(By.NAME, 'mpe').clear()
+                browser.find_element(By.NAME, 'mpp').clear()
+                browser.find_element(By.NAME, 'dpa').clear()
                 if dot:
-                    strictu_sensu.append('DOT')
+                    browser.find_element(By.NAME, 'dot').send_keys('SIM')
+                else:
+                    browser.find_element(By.NAME, 'dot').send_keys('NÃO')
                 if mpa:
-                    strictu_sensu.append('MPA')
+                    browser.find_element(By.NAME, 'mpa').send_keys('SIM')
+                else:
+                    browser.find_element(By.NAME, 'mpa').send_keys('NÃO')
                 if mpe:
-                    strictu_sensu.append('MPE')
+                    browser.find_element(By.NAME, 'mpe').send_keys('SIM')
+                else:
+                    browser.find_element(By.NAME, 'mpe').send_keys('NÃO')
                 if mpp:
-                    strictu_sensu.append('MPP')
+                    browser.find_element(By.NAME, 'mpp').send_keys('SIM')
+                else:
+                    browser.find_element(By.NAME, 'mpp').send_keys('NÃO')
                 if dpa:
-                    strictu_sensu.append('DPA')
-                
-                strictu_sensu = ', '.join(strictu_sensu)
-                browser.find_element(By.NAME, 'divisao').clear()
-                if strictu_sensu:
-                    browser.find_element(By.NAME, 'divisao').send_keys(strictu_sensu)
-                    time.sleep(0.05)
+                    browser.find_element(By.NAME, 'dpa').send_keys('SIM')
+                else:
+                    browser.find_element(By.NAME, 'dpa').send_keys('NÃO')
                     
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
