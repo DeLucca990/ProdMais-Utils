@@ -44,8 +44,8 @@ try:
         email_ppg = sheet.cell(row=row, column=11).value
         nome_coordenador = sheet.cell(row=row, column=13).value
         data_inicio_coordenador = sheet.cell(row=row, column=14).value
-        nivel = sheet.cell(row=row, column=13).value
-        url_dataverse = sheet.cell(row=row, column=17).value
+        nivel = sheet.cell(row=row, column=15).value
+        url_dataverse = sheet.cell(row=row, column=16).value
         
         print(f"ID_CURSO: {id_curso}")
         print(f"COD_CAPES: {codigo_capes}")

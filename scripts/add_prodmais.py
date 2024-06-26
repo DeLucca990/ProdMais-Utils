@@ -119,9 +119,9 @@ try:
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
                 if tipo_vinculo in ['0']:
-                    browser.find_element(By.NAME, 'tipvin').send_keys("TP")
+                    browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Parcial")
                 if tipo_vinculo in ['1', '2', '3']:
-                    browser.find_element(By.NAME, 'tipvin').send_keys("TI")
+                    browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Integral")
                 time.sleep(1)
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
