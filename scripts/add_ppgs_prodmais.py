@@ -8,8 +8,8 @@ from datetime import datetime
 
 load_dotenv()
 
-# browser = webdriver.Firefox()
-browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+browser = webdriver.Firefox()
+# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
 url = 'http://localhost:8080/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
@@ -26,7 +26,8 @@ browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
 
-dados_ppg = 'data\\DadosGeraisStricto.xlsx'
+# dados_ppg = 'data\\DadosGeraisStricto.xlsx'
+dados_ppg = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/DadosGeraisStricto.xlsx'
 
 try:
     # Carregue o arquivo de workbook apenas uma vez

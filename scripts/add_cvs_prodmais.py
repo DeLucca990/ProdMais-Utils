@@ -7,8 +7,8 @@ import openpyxl
 
 load_dotenv()
 
-# browser = webdriver.Firefox()
-browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+browser = webdriver.Firefox()
+# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
 url = 'http://localhost:8080/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
@@ -24,13 +24,16 @@ time.sleep(0.5)
 browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
-# cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
-cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
-c = 1
 # local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
-dados_docentes_dir = 'data\\dados_docentes.xlsx'
-stats_dir = 'data\\status_add.xlsx'
+# cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
+# dados_docentes_dir = 'data\\dados_docentes.xlsx'
+# stats_dir = 'data\\status_add.xlsx'
 
+cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
+dados_docentes_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/dados_docentes.xlsx'
+stats_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/status_add.xlsx'
+
+c = 1
 try:
     # Carregue o arquivo de workbook apenas uma vez
     workbook = openpyxl.load_workbook(dados_docentes_dir)
