@@ -1,16 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 import time
 from dotenv import load_dotenv
 import os
 import openpyxl
-
+from selenium.webdriver.support.ui import WebDriverWait
 load_dotenv()
 
-browser = webdriver.Firefox()
-# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+# browser = webdriver.Firefox()
+browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
-url = 'http://localhost:8080/inclusao.php'
+# url = 'http://localhost:8080/inclusao.php'
+url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
 
@@ -24,16 +26,13 @@ time.sleep(0.5)
 browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
-# local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
-# cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
-# dados_docentes_dir = 'data\\dados_docentes.xlsx'
-# stats_dir = 'data\\status_add.xlsx'
-
-cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
-dados_docentes_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/dados_docentes.xlsx'
-stats_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/status_add.xlsx'
-
+# cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
+cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
 c = 1
+# local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
+dados_docentes_dir = 'data\\dados_docentes.xlsx'
+stats_dir = 'data\\status_add.xlsx'
+
 try:
     # Carregue o arquivo de workbook apenas uma vez
     workbook = openpyxl.load_workbook(dados_docentes_dir)
@@ -121,15 +120,46 @@ try:
                 
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
-                if tipo_vinculo in ['0']:
-                    browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Parcial")
-                if tipo_vinculo in ['1', '2', '3']:
+                if tipo_vinculo == "Exclusiva (TI)":
                     browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Integral")
+                elif tipo_vinculo == 'Não Exclusiva (TP)':
+                    browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Parcial")
+                else:
+                    browser.find_element(By.NAME, 'tipvin').send_keys("")
                 time.sleep(1)
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
-                time.sleep(2)
+                
+                wait = WebDriverWait(browser, 120)  # 120 segundos de timeout
 
+                # Função personalizada para verificar ambos textos
+                def text_to_be_present_in_element(locator, text1, text2, text3):
+                    def _predicate(driver):
+                        try:
+                            element = driver.find_element(*locator)
+                            if text1 in element.text or text2 in element.text or text3 in element.text:
+                                return True
+                        except:
+                            return False
+                    return _predicate
+
+                # Localizador do elemento que contém o texto (ajuste conforme necessário)
+                locator = (By.TAG_NAME, 'body')  # Pode ser By.CLASS_NAME, By.ID, etc.
+
+                # Esperar até que o texto esteja presente no elemento
+                wait.until(text_to_be_present_in_element(locator, "Tem", "Registro anterior não encontrado na base", "413 Request Entity Too Large"))
+                
+                #caso exista 413 Request Entity Too Large, printa o erro e pula para o próximo arquivo
+                
+                if('413 Request Entity Too Large' in browser.page_source):
+                    print(f"Arquivo {filename} [{c}] muito grande")
+                    stats_sheet.cell(row=row, column=8).value = '413 Request Entity Too Large'
+                    stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    c+=1
+                    browser.back()
+                    time.sleep(2)
+                    continue
+                
                 page_content = browser.page_source
                 if ('Registro anterior não encontrado na base') in page_content:
                     print(f"Arquivo {filename} [{c}] adicionado")
@@ -142,7 +172,8 @@ try:
                 c+=1
 
                 browser.back()
-                time.sleep(2)
+                #espera haver o campo com name instituição
+                WebDriverWait(browser, 120).until(EC.presence_of_element_located((By.NAME, 'NOME_INSTITUICAO')))
 
                 # Salve as alterações a cada iteração
                 workbook_stats.save(stats_dir)
