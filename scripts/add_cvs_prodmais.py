@@ -126,18 +126,18 @@ try:
                     browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Parcial")
                 else:
                     browser.find_element(By.NAME, 'tipvin').send_keys("")
-                time.sleep(1)
+                time.sleep(0.1)
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
                 
                 wait = WebDriverWait(browser, 120)  # 120 segundos de timeout
 
                 # Função personalizada para verificar ambos textos
-                def text_to_be_present_in_element(locator, text1, text2, text3):
+                def text_to_be_present_in_element(locator, text1, text2, text3, text4, text5):
                     def _predicate(driver):
                         try:
                             element = driver.find_element(*locator)
-                            if text1 in element.text or text2 in element.text or text3 in element.text:
+                            if text1 in element.text or text2 in element.text or text3 in element.text or text4 in element.text or text5 in element.text:
                                 return True
                         except:
                             return False
@@ -147,7 +147,7 @@ try:
                 locator = (By.TAG_NAME, 'body')  # Pode ser By.CLASS_NAME, By.ID, etc.
 
                 # Esperar até que o texto esteja presente no elemento
-                wait.until(text_to_be_present_in_element(locator, "Tem", "Registro anterior não encontrado na base", "413 Request Entity Too Large"))
+                wait.until(text_to_be_present_in_element(locator, "Tem", "Registro anterior não encontrado na base", "413 Request Entity Too Large", "Nenhum arquivo foi enviado", "Ocorreu um erro ao enviar o arquivo"))
                 
                 #caso exista 413 Request Entity Too Large, printa o erro e pula para o próximo arquivo
                 
@@ -157,14 +157,35 @@ try:
                     stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
                     c+=1
                     browser.back()
-                    time.sleep(2)
+                    WebDriverWait(browser, 120).until(EC.presence_of_element_located((By.NAME, 'NOME_INSTITUICAO')))
+                    workbook_stats.save(stats_dir)
+                    continue
+                
+                if('Nenhum arquivo foi enviado' in browser.page_source):
+                    print(f"Arquivo {filename} [{c}] não enviado")
+                    stats_sheet.cell(row=row, column=8).value = 'Nenhum arquivo foi enviado'
+                    stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    c+=1
+                    browser.back()
+                    WebDriverWait(browser, 120).until(EC.presence_of_element_located((By.NAME, 'NOME_INSTITUICAO')))
+                    workbook_stats.save(stats_dir)
+                    continue
+                    
+                if('Ocorreu um erro ao enviar o arquivo' in browser.page_source):
+                    print(f"Arquivo {filename} [{c}] não enviado")
+                    stats_sheet.cell(row=row, column=8).value = 'Ocorreu um erro ao enviar o arquivo'
+                    stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    c+=1
+                    browser.back()
+                    WebDriverWait(browser, 120).until(EC.presence_of_element_located((By.NAME, 'NOME_INSTITUICAO')))
+                    workbook_stats.save(stats_dir)
                     continue
                 
                 page_content = browser.page_source
                 if ('Registro anterior não encontrado na base') in page_content:
                     print(f"Arquivo {filename} [{c}] adicionado")
-                    stats_sheet.cell(row=row, column=9).value = 'OK'
-                    stats_sheet.cell(row=row, column=10).value = time.strftime('%H:%M:%S %d/%m/%Y')
+                    stats_sheet.cell(row=row, column=8).value = 'OK'
+                    stats_sheet.cell(row=row, column=9).value = time.strftime('%H:%M:%S %d/%m/%Y')
                 else:
                     print(f"Arquivo {filename} [{c}] já existe na base")
                     stats_sheet.cell(row=row, column=8).value = 'Já existe'
