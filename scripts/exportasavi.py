@@ -2,6 +2,7 @@ import time
 import requests
 from dotenv import load_dotenv
 import os
+import pandas as pd
 load_dotenv()
 
 # url = 'http://localhost:8080/inclusao.php'
@@ -51,6 +52,14 @@ if response.status_code == 200:
             with open('report.csv', 'wb') as f:
                 f.write(download_response.content)
             print('Download completo e salvo como report.csv')
+            
+            # Lê o arquivo CSV
+            df = pd.read_csv('report.csv')
+
+            # Converte para Excel
+            df.to_excel('report.xlsx', index=False)
+
+            print('CSV convertido para Excel com sucesso!')
     else:
         print('Job path não encontrado na resposta')
 else:
