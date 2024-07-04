@@ -63,15 +63,18 @@ try:
                 
                 google_scholar = sheet.cell(row=row, column=13).value
                 browser.find_element(By.NAME, 'google_citation').clear()
+                time.sleep(0.005)
                 if google_scholar:
                     browser.find_element(By.NAME, 'google_citation').send_keys(google_scholar)
                     
                 browser.find_element(By.NAME, 'lattes_id').clear()
+                time.sleep(0.005)
                 browser.find_element(By.NAME, 'lattes_id').send_keys(id)
                 time.sleep(0.05)
                 
                 linkedin = sheet.cell(row=row, column=22).value
                 browser.find_element(By.NAME, 'linkedin').clear()
+                time.sleep(0.005)
                 if linkedin:
                     browser.find_element(By.NAME, 'linkedin').send_keys(linkedin)
                 time.sleep(0.05)
@@ -87,10 +90,12 @@ try:
                     unidades_academicas.append('Negócios')
                 if tecnologia:
                     unidades_academicas.append('Tecnologia')
+                unidade_academica =  ''
                 unidade_academica = '|'.join(unidades_academicas)
                 
                 
                 browser.find_element(By.NAME, 'unidade_academica').clear()
+                time.sleep(0.005)
                 if unidade_academica:
                     browser.find_element(By.NAME, 'unidade_academica').send_keys(unidade_academica)
                     time.sleep(0.05)
@@ -114,12 +119,17 @@ try:
                     ppgs.append('Doutorado Profissional em Administração')
                 
                 ppgs = '|'.join(ppgs)
-                browser.find_element(By.NAME, 'ppg_nome').clear()
+                ppg_nome_field = browser.find_element(By.NAME, 'ppg_nome')
+                ppg_nome_field.clear()
+                assert ppg_nome_field.get_attribute("value") == ""
+                time.sleep(0.05)
+                ppg_nome_field.clear()
                 if ppgs:
                     browser.find_element(By.NAME, 'ppg_nome').send_keys(ppgs)
                 
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
+                time.sleep(0.005)
                 if tipo_vinculo == "Exclusiva (TI)":
                     browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Integral")
                 elif tipo_vinculo == 'Não Exclusiva (TP)':

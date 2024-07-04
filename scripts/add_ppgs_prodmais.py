@@ -11,8 +11,8 @@ load_dotenv()
 # browser = webdriver.Firefox()
 browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
-url = 'http://localhost:8080/inclusao.php'
-# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# url = 'http://localhost:8080/inclusao.php'
+url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
 
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
@@ -48,6 +48,7 @@ try:
         data_inicio_coordenador = sheet.cell(row=row, column=14).value
         nivel = sheet.cell(row=row, column=15).value
         url_dataverse = sheet.cell(row=row, column=16).value
+        repositorio_institucional = sheet.cell(row=row, column=18).value
         
         print(f"ID_CURSO: {id_curso}")
         print(f"COD_CAPES: {codigo_capes}")
@@ -121,6 +122,10 @@ try:
         browser.find_element(By.NAME, 'PRODMAIS_DATAVERSE').clear()
         if url_dataverse:
             browser.find_element(By.NAME, 'PRODMAIS_DATAVERSE').send_keys(url_dataverse)
+        
+        browser.find_element(By.NAME, 'PRODMAIS_DSPACE').clear()
+        if repositorio_institucional:
+            browser.find_element(By.NAME, 'PRODMAIS_DSPACE').send_keys(repositorio_institucional)
 
         browser.find_element(By.XPATH, '/html/body/main/div/div/form[2]/div[2]/button').click()
         browser.back()
