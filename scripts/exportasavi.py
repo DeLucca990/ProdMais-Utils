@@ -5,8 +5,6 @@ import os
 import pandas as pd
 load_dotenv()
 
-# url = 'http://localhost:8080/inclusao.php'
-url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
 username = os.getenv('ELASTIC_USERNAME')
 password = os.getenv('ELASTIC_PASSWORD')
 
