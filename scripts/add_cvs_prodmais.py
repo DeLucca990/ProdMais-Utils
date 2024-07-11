@@ -9,13 +9,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 load_dotenv()
 
 # browser = webdriver.Firefox()
-browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
 
-# url = 'http://localhost:8080/inclusao.php'
-url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+url = 'http://localhost:8080/inclusao.php'
+# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
 
+options = webdriver.FirefoxOptions()
+options.headless = True
+browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe', options=options)
 browser.get(url)
 
 start_time = time.time()
@@ -126,17 +128,65 @@ try:
                 ppg_nome_field.clear()
                 if ppgs:
                     browser.find_element(By.NAME, 'ppg_nome').send_keys(ppgs)
+                else:
+                    browser.find_element(By.NAME, 'ppg_nome').send_keys('Não Classificado')
                 
                 tipo_vinculo = str(sheet.cell(row=row, column=11).value)
                 browser.find_element(By.NAME, 'tipvin').clear()
                 time.sleep(0.005)
-                if tipo_vinculo == "Exclusiva (TI)":
+                if tipo_vinculo == "TI":
                     browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Integral")
-                elif tipo_vinculo == 'Não Exclusiva (TP)':
+                elif tipo_vinculo == 'TP':
                     browser.find_element(By.NAME, 'tipvin').send_keys("Tempo Parcial")
                 else:
-                    browser.find_element(By.NAME, 'tipvin').send_keys("")
-                time.sleep(0.1)
+                    browser.find_element(By.NAME, 'tipvin').send_keys("Outros")
+                time.sleep(0.05)
+                
+                email_institucional = sheet.cell(row=row, column=23).value
+                browser.find_element(By.NAME, 'email').clear()
+                if email_institucional:
+                    browser.find_element(By.NAME, 'email').send_keys(email_institucional)
+                time.sleep(0.05)
+                
+                raca = sheet.cell(row=row, column=24).value
+                browser.find_element(By.NAME, 'raca').clear()
+                if raca:
+                    browser.find_element(By.NAME, 'raca').send_keys(raca)
+                time.sleep(0.05)
+                
+                site_pessoal = sheet.cell(row=row, column=28).value
+                browser.find_element(By.NAME, 'site_pessoal').clear()
+                if site_pessoal:
+                    browser.find_element(By.NAME, 'site_pessoal').send_keys(site_pessoal)
+                time.sleep(0.05)
+                    
+                areas = sheet.cell(row=row, column=25).value
+                areas = areas.split('|')
+                areas_formatadas = []
+                for area in areas:
+                    if "-" in area:
+                        area = area.split("-")[1]
+                        if area.strip() != "" and 'Outra(s) área(s)' not in area:
+                            areas_formatadas.append(area.strip())
+                    else:
+                        if area.strip() != "" and area.strip() != 'Outra(s) área(s)':
+                            areas_formatadas.append(area.strip())
+                areas_formatadas = '|'.join(areas_formatadas)
+                browser.find_element(By.NAME, 'areas').clear()
+                if len(areas_formatadas) > 0:
+                    browser.find_element(By.NAME, 'areas').send_keys(areas_formatadas)
+                
+                programas = sheet.cell(row=row, column=26).value
+                browser.find_element(By.NAME, 'programas').clear()
+                if len(programas) > 0:
+                    browser.find_element(By.NAME, 'programas').send_keys(programas)
+                else:
+                    browser.find_element(By.NAME, 'programas').send_keys('NULL')
+                
+                industrias = sheet.cell(row=row, column=27).value
+                browser.find_element(By.NAME, 'industrias').clear()
+                if len(industrias) > 0:
+                    browser.find_element(By.NAME, 'industrias').send_keys(industrias)    
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
                 
