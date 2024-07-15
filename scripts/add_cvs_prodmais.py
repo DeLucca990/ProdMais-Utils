@@ -10,8 +10,8 @@ load_dotenv()
 
 # browser = webdriver.Firefox()
 
-url = 'http://localhost:8080/inclusao.php'
-# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# url = 'http://localhost:8080/inclusao.php'
+url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
 
@@ -43,7 +43,9 @@ try:
     workbook_stats = openpyxl.load_workbook(stats_dir)
     stats_sheet = workbook_stats[workbook_stats.sheetnames[0]]
 
+    # rows_falha = [43, 133, 193, 285, 324, 381, 391, 406, 469]
     for row in range(2, sheet.max_row + 1):
+    # for row in rows_falha:
         url_lattes = sheet.cell(row=row, column=3).value
         id = url_lattes.split('/')[-1]
 
@@ -100,6 +102,9 @@ try:
                 time.sleep(0.005)
                 if unidade_academica:
                     browser.find_element(By.NAME, 'unidade_academica').send_keys(unidade_academica)
+                    time.sleep(0.05)
+                else:
+                    browser.find_element(By.NAME, 'unidade_academica').send_keys('Não Classificado')
                     time.sleep(0.05)
                 
                 dot = sheet.cell(row=row, column=14).value
