@@ -8,11 +8,15 @@ from datetime import datetime
 
 load_dotenv()
 
-# browser = webdriver.Firefox()
-browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+# Parâmetros Pedro
+browser = webdriver.Firefox()
+url = 'http://localhost:8080/inclusao.php'
+dados_ppg = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/DadosGeraisStricto.xlsx'
 
-# url = 'http://localhost:8080/inclusao.php'
-url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# Parâmetros Yan
+# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe')
+# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# dados_ppg = 'data\\DadosGeraisStricto.xlsx'
 
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
@@ -27,8 +31,6 @@ time.sleep(0.5)
 browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
-
-dados_ppg = 'data\\DadosGeraisStricto.xlsx'
 
 try:
     # Carregue o arquivo de workbook apenas uma vez
@@ -137,6 +139,6 @@ finally:
     end_time = time.time()
     final_time = (end_time - start_time)/60
 
-    print(f"Tempo de execução do script: {final_time:2f} minutos")
+    print(f"Tempo de execução do script: {final_time:.2f} minutos")
 
     browser.quit()
