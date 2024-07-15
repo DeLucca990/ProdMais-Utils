@@ -6,18 +6,28 @@ from dotenv import load_dotenv
 import os
 import openpyxl
 from selenium.webdriver.support.ui import WebDriverWait
+
 load_dotenv()
 
-# browser = webdriver.Firefox()
+# Parâmetros Pedro
+url = 'http://localhost:8080/inclusao.php'
+browser = webdriver.Firefox()
+cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
+dados_docentes_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/dados_docentes.xlsx'
+stats_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/status_add.xlsx'
 
-# url = 'http://localhost:8080/inclusao.php'
-url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# Parâmetros Yan
+# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe', options=options)
+# cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
+# dados_docentes_dir = 'data\\dados_docentes.xlsx'
+# stats_dir = 'data\\status_add.xlsx' 
+
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
 
 options = webdriver.FirefoxOptions()
 options.headless = True
-browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe', options=options)
 browser.get(url)
 
 start_time = time.time()
@@ -28,13 +38,7 @@ time.sleep(0.5)
 browser.find_element(By.NAME, 'submit').click()
 time.sleep(1)
 
-# cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
-cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
 c = 1
-# local dos docentes é o mesmo do arquivo atual + dados_docentes.csv
-dados_docentes_dir = 'data\\dados_docentes.xlsx'
-stats_dir = 'data\\status_add.xlsx'
-
 try:
     # Carregue o arquivo de workbook apenas uma vez
     workbook = openpyxl.load_workbook(dados_docentes_dir)
@@ -189,6 +193,9 @@ try:
                     browser.find_element(By.NAME, 'programas').send_keys('NULL')
                 
                 industrias = sheet.cell(row=row, column=27).value
+                if industrias:
+                    industrias = industrias.replace("Setor de ", "").replace("Setor ", "")
+                    industrias = industrias.replace(" |", "|").replace("| ", "|")
                 browser.find_element(By.NAME, 'industrias').clear()
                 if len(industrias) > 0:
                     browser.find_element(By.NAME, 'industrias').send_keys(industrias)    
@@ -269,6 +276,6 @@ finally:
     end_time = time.time()
     final_time = (end_time - start_time)/60
 
-    print(f"Tempo de execução do script: {final_time:2f} minutos")
+    print(f"Tempo de execução do script: {final_time:.2f} minutos")
 
     browser.quit()
