@@ -9,25 +9,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 load_dotenv()
 
-# Parâmetros Pedro
-url = 'http://localhost:8080/inclusao.php'
-browser = webdriver.Firefox()
-cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
-dados_docentes_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/dados_docentes.xlsx'
-stats_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/status_add.xlsx'
+# # Parâmetros Pedro
+# url = 'http://localhost:8080/inclusao.php'
+# browser = webdriver.Firefox()
+# cvs_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/curriculos'
+# dados_docentes_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/dados_docentes.xlsx'
+# stats_dir = '/home/pedrodl/Documents/ProdMaisInsper/ProdMais-Utils/data/status_add.xlsx'
 
 # Parâmetros Yan
-# url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
-# browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe', options=options)
-# cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
-# dados_docentes_dir = 'data\\dados_docentes.xlsx'
-# stats_dir = 'data\\status_add.xlsx' 
+options = webdriver.FirefoxOptions()
+options.headless = False
+url = 'https://prodmais.datascience.insper.edu.br/inclusao.php'
+browser = webdriver.Firefox(executable_path='C:\\geckodriver.exe', options=options)
+cvs_dir = 'C:\\Users\\Yan\\Desktop\\utilsProdmais\\ProdMais-Utils\\curriculos'
+dados_docentes_dir = 'data\\dados_docentes.xlsx'
+stats_dir = 'data\\status_add.xlsx' 
 
 username = os.getenv('PRODMAIS_USERNAME')
 password = os.getenv('PRODMAIS_PASSWORD')
 
-options = webdriver.FirefoxOptions()
-options.headless = True
 browser.get(url)
 
 start_time = time.time()
@@ -199,6 +199,21 @@ try:
                 browser.find_element(By.NAME, 'industrias').clear()
                 if len(industrias) > 0:
                     browser.find_element(By.NAME, 'industrias').send_keys(industrias)    
+                
+                imprensa_temas = sheet.cell(row=row, column=29).value
+                lista_temas = []
+                if imprensa_temas:
+                    lista_temas = imprensa_temas.split(',')
+                    #retira espaços em branco da lista
+                    lista_temas = [tema.strip() for tema in lista_temas]
+                    #tira elementos vazios da lista
+                    lista_temas = list(filter(None, lista_temas))
+                temas = '|'.join(lista_temas)
+                browser.find_element(By.NAME, 'imprensa_tema').clear()
+                if len(temas) > 0:
+                    browser.find_element(By.NAME, 'imprensa_tema').send_keys(temas)
+                else:
+                    browser.find_element(By.NAME, 'imprensa_tema').send_keys('Não Classificado')
                 
                 browser.find_element(By.XPATH, '/html/body/main/div/div/form[1]/div[2]/button').click()
                 
